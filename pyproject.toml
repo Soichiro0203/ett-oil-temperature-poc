@@ -1,0 +1,12 @@
+[project]
+name = "ettpoc"
+version = "0.1.0"
+description = "PoC: oil temperature forecasting on the ETT dataset for transformer predictive maintenance"
+requires-python = ">=3.12"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
