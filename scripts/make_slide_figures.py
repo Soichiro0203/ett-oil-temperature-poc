@@ -160,7 +160,8 @@ s = g[g.model == "persistence"]
 ax.plot(s.index + pd.Timedelta(hours=6), s.ot_now + s.delta_pred, color=BASE, lw=1.6, label="現状相当(6h 先)")
 ax.plot(t, act.ot_now + act.delta_pred, color=ACCENT, lw=2, label="LightGBM(6h 先)")
 ax.axhline(45, color="#B3261E", ls="--", lw=1.4)
-ax.annotate("45°C 閾値", (t[3], 45.6), color="#B3261E", fontsize=11, fontweight="bold")
+ax.text(1.008, 45, "45°C 閾値", transform=ax.get_yaxis_transform(), color="#B3261E",
+        fontsize=11, fontweight="bold", va="center", ha="left")
 ax.set_ylabel("OT [°C]"); ax.legend(frameon=False, ncol=3, fontsize=11, loc="upper left")
 ax.tick_params(axis="x", labelsize=10)
 save("example_week")
