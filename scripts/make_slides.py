@@ -435,7 +435,7 @@ foot(s, "実装は src/ettpoc/backtest.py、テストは tests/ に 25 件(実�
 s = blank(prs)
 y = message(s, "結果", "ETTh2 は 12 時間先まで誤差を 56〜59% 削減、ETTh1 は 17〜21% にとどまる",
             sub="24 時間先はどちらの設備でも現状相当と差がつかない")
-ey = picture(s, "slide_mae_by_horizon.png", y, max_h=Inches(3.0))
+ey = picture(s, "slide_mae_by_horizon.png", y, max_h=Inches(3.15))
 rows = [
     ("MAE [°C]", "1h", "3h", "6h", "12h", "24h"),
     ("ETTh1  現状相当", "0.50", "0.91", "1.32", "1.73", "1.74"),
@@ -444,7 +444,7 @@ rows = [
     ("ETTh2  LightGBM", "0.38", "1.03", "1.82", "2.65", "3.06"),
 ]
 table(s, M + Inches(1.7), ey + Inches(0.3), Inches(8.6), rows,
-      col_w=(0.34, 0.132, 0.132, 0.132, 0.132, 0.132), size=12.5, row_h=Inches(0.3),
+      col_w=(0.34, 0.132, 0.132, 0.132, 0.132, 0.132), size=12.5, row_h=Inches(0.28),
       highlight_rows=(2, 4))
 foot(s, "24 時間先で現状相当の誤差が 12 時間先より小さいのは、日内周期により 24 時間前の値が再び近づくため。")
 

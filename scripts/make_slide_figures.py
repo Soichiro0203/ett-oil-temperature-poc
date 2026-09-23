@@ -103,18 +103,28 @@ save("artifacts")
 rows = [{"dataset": d, "horizon": h, "model": m, **regression_metrics(g.delta_true, g.delta_pred)}
         for (d, h, m), g in preds.groupby(["dataset", "horizon", "model"])]
 mae = pd.DataFrame(rows).pivot_table(index=["dataset", "model"], columns="horizon", values="mae")
-fig, axes = plt.subplots(1, 2, figsize=(11, 3.4))
+# horizons sit on evenly spaced category ticks: on a linear axis 1/3/6 crowd together
+# and the improvement labels collide.
+hz = list(mae.columns)
+x = np.arange(len(hz))
+fig, axes = plt.subplots(1, 2, figsize=(11.5, 3.5))
 for ax, d in zip(axes, data):
-    ax.plot(mae.columns, mae.loc[(d, "persistence")], "o--", color=BASE, lw=2, ms=6, label="persistence(現状相当)")
-    ax.plot(mae.columns, mae.loc[(d, "lgbm")], "o-", color=ACCENT, lw=2.6, ms=7, label="LightGBM")
-    for h in mae.columns:
-        imp = 1 - mae.loc[(d, "lgbm"), h] / mae.loc[(d, "persistence"), h]
-        off, ha = ((18, -10), "left") if h == 1 else ((0, -18), "center")
-        ax.annotate(f"−{imp:.0%}", (h, mae.loc[(d, 'lgbm'), h]), textcoords="offset points",
-                    xytext=off, ha=ha, fontsize=10.5, color=ACCENT, fontweight="bold")
-    ax.set_title(f"{d}", loc="left"); ax.set_xlabel("予測ホライズン [h]"); ax.set_ylabel("MAE [°C]")
-    ax.set_xticks(mae.columns)
-    ax.set_ylim(-0.13 * mae.loc[(d, "persistence")].max(), None)
+    base_y = mae.loc[(d, "persistence")].to_numpy()
+    lgbm_y = mae.loc[(d, "lgbm")].to_numpy()
+    ax.plot(x, base_y, "o--", color=BASE, lw=2, ms=6, label="persistence(現状相当)")
+    ax.plot(x, lgbm_y, "o-", color=ACCENT, lw=2.6, ms=7, label="LightGBM")
+    top = base_y.max()
+    # improvement vs the baseline, as a tidy row under each horizon tick rather than
+    # floating beside the markers (where the 1h/3h labels collided)
+    for xi, (b, l) in enumerate(zip(base_y, lgbm_y)):
+        ax.text(xi, -0.17 * top, f"−{1 - l / b:.0%}", ha="center", va="center",
+                fontsize=11.5, color=ACCENT, fontweight="bold")
+    ax.set_title(f"{d}", loc="left")
+    ax.set_xlabel("予測ホライズン [h]", labelpad=20); ax.set_ylabel("MAE [°C]")
+    ax.set_xticks(x); ax.set_xticklabels(hz)
+    ax.set_xlim(-0.35, len(hz) - 0.65)
+    ax.set_ylim(-0.26 * top, top * 1.1)
+    ax.set_yticks([t for t in ax.get_yticks() if 0 <= t <= top * 1.12])
     ax.spines["bottom"].set_position(("data", 0))
 axes[0].legend(frameon=False, fontsize=11, loc="upper left")
 save("mae_by_horizon")
